@@ -1,6 +1,6 @@
 const TicketControl = require("../models/ticket-control");
 
-const ticketControl = new TicketControl
+const ticketControl = new TicketControl()
 
 const socketController = (socket) => {
     
@@ -11,6 +11,29 @@ const socketController = (socket) => {
         callback(siguiente)
 
         // TODO:  Notificar ticekt
+    })
+
+    socket.on('atender-ticket', ({escritorio},callback) => {
+        if (!escritorio) {
+            return callback({
+                ok:false,
+                msg:'El escritorio es obligatorio'
+            })
+        }
+
+        const ticket = ticketControl.atenderTicket(escritorio)
+
+        if (!ticket) {
+            return callback({
+                ok: false,
+                msg: 'Ya no hay ticekts pendientes',
+            })
+        }
+
+        callback({
+            ok:true,
+            ticket
+        })
     })
 
 }

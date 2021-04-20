@@ -2,6 +2,8 @@
 
 const lblEscritorio = document.querySelector('h1')
 const btnAtender = document.querySelector('button')
+const lblTicket = document.querySelector('small')
+const divAlerta = document.querySelector('.alert')
 
 const searchParams = new URLSearchParams(window.location.search)
 
@@ -13,6 +15,8 @@ if (!searchParams.has('escritorio')) {
 const escritorio = searchParams.get('escritorio')
 console.log({escritorio});
 lblEscritorio.innerText = escritorio
+
+divAlerta.style.display = 'none'
 
 
 const socket = io();
@@ -33,6 +37,16 @@ socket.on('ultimo-ticket', (payload)  => {
 })
 
 btnAtender.addEventListener( 'click', () => {
+    // console.log('Click en atender');
+    socket.emit('atender-ticket',{escritorio}, ({ok,ticket}) => {
+        if (!ok) {
+            lblTicket.innerText = `Nadie`
+            divAlerta.style = ''
+            return
+        }
+        lblTicket.innerText = `Ticket ${ticket.numero}`
+    })
+
 
     // socket.emit( 'siguiente-ticket', null, ( ticket ) => {
     //     lblNuevoTicket.innerText = ticket
